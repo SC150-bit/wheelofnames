@@ -2,6 +2,40 @@
 
 A manipulative lucky wheel that lets you control who wins
 
+## Getting Started
+
+### Prerequisites
+
+- [Deno](https://deno.com/) installed on your system
+
+### Development
+
+Start the development server with hot-reload:
+
+```bash
+deno task dev
+```
+
+The server will start at `http://localhost:8000` and automatically rebuild when you make changes to files in the `src/` directory.
+
+### Building
+
+Build the project for production (minifies and obfuscates code):
+
+```bash
+deno task build
+```
+
+This creates an optimized build in the `dist/` directory.
+
+### Serving Production Build
+
+Serve the production build:
+
+```bash
+deno task serve
+```
+
 ## Features
 
 - **Truly Random Mode**: Works as a fair random picker by default
