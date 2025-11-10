@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Settings</title><style>:root{color-scheme:light;--bg:#f5f7fb;--panel:#ffffff;--accent:#2563eb;--accent-dark:#1e3a8a;--text:#0f172a;--muted:#475569;--border:#d0d7e3}*{box-sizing:border-box}body{margin:0;padding:1.5rem;font-family:"Inter","Segoe UI",sans-serif;background:var(--bg);color:var(--text)}h2{margin:0 0 1rem;font-size:1.4rem}.option-list{display:flex;flex-direction:column;gap:0.6rem}.option-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;border-radius:0.8rem;border:1px solid var(--border);background:rgba(255,255,255,0.85);cursor:pointer;transition:border-color 120ms ease,box-shadow 120ms ease,background 120ms ease}.option-item:hover{border-color:rgba(37,99,235,0.4)}.option-item input{accent-color:var(--accent);cursor:pointer}.option-item span{font-weight:600;color:var(--text);cursor:pointer}.option-item.selected{border-color:rgba(37,99,235,0.6);box-shadow:0 0 0 2px rgba(37,99,235,0.15);background:rgba(37,99,235,0.08)}</style></head><body><h2>Adjust Options</h2><div id="option-list" class="option-list"></div> <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const entriesParam = params.get("entries");
+        const selectedParam = params.get("riggedIndex");
+
+        let entries = [];
+        let currentSelected = null;
+
+        if (entriesParam) {
+          try {
+            entries = JSON.parse(decodeURIComponent(entriesParam));
+          } catch (e) {
+            console.error("Parse error:", e);
+          }
+        }
+
+        if (selectedParam && selectedParam !== "null") {
+          currentSelected = parseInt(selectedParam, 10);
+        }
+
+        const container = document.getElementById("option-list");
+
+        function createOption(label, value, isChecked) {
+          const wrapper = document.createElement("label");
+          wrapper.className = "option-item";
+          if (isChecked) {
+            wrapper.classList.add("selected");
+          }
+
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = "option";
+          radio.value = value;
+          radio.checked = isChecked;
+
+          const text = document.createElement("span");
+          text.textContent = label;
+
+          wrapper.appendChild(radio);
+          wrapper.appendChild(text);
+
+          wrapper.addEventListener("click", function () {
+            const val = parseInt(radio.value, 10);
+            const result = val >= 0 && val < entries.length ? val : null;
+
+            if (window.opener && !window.opener.closed) {
+              window.opener.postMessage(
+                { type: "cfgApply", index: result },
+                window.location.origin
+              );
+            }
+          });
+
+          return wrapper;
+        }
+
+        // Add default option
+        const defaultChecked =
+          currentSelected === null ||
+          currentSelected < 0 ||
+          currentSelected >= entries.length;
+        container.appendChild(createOption("Default", -1, defaultChecked));
+
+        // Add entry options
+        entries.forEach(function (entry, idx) {
+          const checked = idx === currentSelected;
+          container.appendChild(createOption(entry.label, idx, checked));
+        });
+
+        window.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            window.close();
+          }
+        });
+      })();
+    </script> </body></html>
