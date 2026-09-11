@@ -118,6 +118,7 @@ function removeEntry(index) {
   }
   updateEntryList();
 }
+
 function drawWheel() {
   const sliceCount = state.entries.length;
   const totalWeight = getTotalWeight();
@@ -394,19 +395,28 @@ modal.addEventListener("click", (event) => {
 
 modalCloseBtn.addEventListener("click", () => closeModal());
 
+// Keyboard Trigger (Desktop)
 document.addEventListener("keydown", (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "u") {
     event.preventDefault();
-    if (modal.classList.contains("hidden")) {
-      openModal();
-    } else {
-      closeModal();
-    }
+    openModal();
   }
 
-  if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+  if (event.key === "Escape") {
     closeModal();
   }
+});
+
+// Double-Tap Gesture (Mobile)
+let lastTap = 0;
+document.addEventListener("touchend", (event) => {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  if (tapLength < 300 && tapLength > 0) {
+    event.preventDefault();
+    openModal();
+  }
+  lastTap = currentTime;
 });
 
 recalculateWeights();
