@@ -17,7 +17,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-      - run: deno task -A build
+      - run: deno task build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
